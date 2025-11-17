@@ -55,6 +55,8 @@ public class Main {
             System.out.println("3 - Вычислить префиксную сумму");
             System.out.println("4 - Вычислить сумму на отрезке");
             System.out.println("5 - Обновить элемент");
+            System.out.println("6 - Добавить элемент");
+            System.out.println("7 - Удалить элемент");
             System.out.println("0 - Выход");
             System.out.print("Выберите операцию: ");
 
@@ -165,8 +167,6 @@ public class Main {
                         }
                         if (updateIndex == -1) break;
 
-
-
                         int delta = 0;
                         while (true) {
                             try {
@@ -179,10 +179,95 @@ public class Main {
                             }
                         }
 
-
                         fenwick.update(updateIndex, delta);
                         currentArray[updateIndex] += delta;
                         System.out.println("Элемент обновлен");
+                        break;
+
+                    case 6:
+                        int newValue = 0;
+                        while (true) {
+                            try {
+                                System.out.print("Введите значение нового элемента: ");
+                                newValue = scanner.nextInt();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: введите целое число!");
+                                scanner.next();
+                            }
+                        }
+
+                        int insertIndex = 0;
+                        while (true) {
+                            try {
+                                System.out.print("Введите индекс для вставки (0-" + currentArray.length + ") или -1 для отмены операции: ");
+                                insertIndex = scanner.nextInt();
+                                if (insertIndex == -1) break;
+                                if (insertIndex < 0 || insertIndex > currentArray.length) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + currentArray.length + "]!");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: индекс должен быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (insertIndex == -1) break;
+
+                        //Новый массив, на элемент больше
+                        int[] newArray = new int[currentArray.length + 1];
+
+                        // Копируем элементы до индекса вставки, вставляем новый элемент, копируем со сдвигом оставшееся
+                        for (int i = 0; i < insertIndex; i++) {
+                            newArray[i] = currentArray[i];
+                        }
+                        newArray[insertIndex] = newValue;
+                        for (int i = insertIndex; i < currentArray.length; i++) {
+                            newArray[i + 1] = currentArray[i];
+                        }
+
+                        fenwick.build(newArray);
+                        currentArray = newArray;
+                        System.out.println("Элемент добавлен. Новый размер массива: " + currentArray.length);
+                        break;
+
+                    case 7:
+                        if (currentArray.length == 0) {
+                            System.out.println("Массив пуст!");
+                            break;
+                        }
+
+                        int removeIndex = 0;
+                        while (true) {
+                            try {
+                                System.out.print("Введите индекс элемента для удаления (0-" + (currentArray.length-1) + ") или -1 для отмены операции: ");
+                                removeIndex = scanner.nextInt();
+                                if (removeIndex == -1) break;
+                                if (removeIndex < 0 || removeIndex >= currentArray.length) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + (currentArray.length-1) + "]!");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: индекс должен быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (removeIndex == -1) break;
+
+                        // Новый массив на элемент меньше
+                        int[] reducedArray = new int[currentArray.length - 1];
+
+                        for (int i = 0, j = 0; i < currentArray.length; i++) {
+                            if (i != removeIndex) {
+                                reducedArray[j++] = currentArray[i];
+                            }
+                        }
+
+                        fenwick.build(reducedArray);
+                        currentArray = reducedArray;
+                        System.out.println("Элемент удален. Новый размер массива: " + currentArray.length);
                         break;
 
                     case 0:

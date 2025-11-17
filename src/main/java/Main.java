@@ -2,6 +2,7 @@
 
 package main.java;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,19 +11,41 @@ public class Main {
         int[] currentArray = null;
 
         System.out.print("Введите количество элементов массива: ");
-        int n = scanner.nextInt();
+        int n = 0;
+        while (true) {
+            try {
+                n = scanner.nextInt();
+                if (n <= 0) {
+                    System.out.print("Количество элементов должно быть натуральным числом! Введите снова: ");
+                    continue;
+                }
+                break;
+            } catch (InputMismatchException e) {
+                System.out.print("Ошибка: введите целое число! Введите снова: ");
+                scanner.next();
+            }
+        }
 
         int[] array = new int[n];
 
-        System.out.println("Введите элементы массива:");
+        System.out.println("Введите элементы массива");
         for (int i = 0; i < n; i++) {
-            array[i] = scanner.nextInt();
+            while (true) {
+                try {
+                    System.out.print("Элемент " + i + ": ");
+                    array[i] = scanner.nextInt();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.print("Ошибка: введите целое число! Введите снова: ");
+                    scanner.next();
+                }
+            }
+
         }
 
         currentArray = array.clone();
         fenwick.build(array);
 
-        fenwick.build(array);
 
         boolean running = true;
         while (running) {
@@ -35,7 +58,17 @@ public class Main {
             System.out.println("0 - Выход");
             System.out.print("Выберите операцию: ");
 
-            int choice = scanner.nextInt();
+
+            int choice = 0;
+            try {
+                choice = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Неверный выбор операции!");
+                scanner.next();
+                continue;
+            }
+
+
             try {
                 switch (choice) {
 
@@ -48,7 +81,7 @@ public class Main {
                             }
                             System.out.println("]");
                         } else {
-                            System.out.println("Массив не инициализирован");
+                            System.out.println("Массив не инициализирован!");
                         }
                         break;
                     case 2:
@@ -56,25 +89,99 @@ public class Main {
                         break;
 
                     case 3:
-                        System.out.print("Введите индекс (0-" + (n-1) + "): ");
-                        int prefixIndex = scanner.nextInt();
-                        System.out.println("Префиксная сумма [0.." + prefixIndex + "]: " + fenwick.prefixSum(prefixIndex));
+                        while (true) {
+                            try {
+                                System.out.print("Введите индекс (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                int prefixIndex = scanner.nextInt();
+                                if (prefixIndex == -1) break;
+                                System.out.println("Префиксная сумма [0.." + prefixIndex + "]: " + fenwick.prefixSum(prefixIndex));
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: индекс должен быть целым числом!");
+                                scanner.next();
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Ошибка: " + e.getMessage());
+                        }
+                        }
                         break;
 
                     case 4:
-                        System.out.print("Введите левую границу (0-" + (n-1) + "): ");
-                        int left = scanner.nextInt();
-                        System.out.print("Введите правую границу (" + left + "-" + (n-1) + "): ");
-                        int right = scanner.nextInt();
+                        System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                        int left = 0;
+                        while (true) {
+                            try {
+                                left = scanner.nextInt();
+                                if (left == -1) break;
+                                if (left < 0 || left >= n) {
+                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [0, " + (n-1) + "]");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: левая граница должна быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (left == -1) break;
+
+
+                        int right = 0;
+                        while (true){
+                            try{
+                                System.out.print("Введите правую границу (" + left + "-" + (n-1) + ") или -1 для отмены операции: ");
+                                right = scanner.nextInt();
+                                if (right == -1) break;
+                                if (right < left || right >= n) {
+                                    System.out.println("Ошибка: правая граница должна быть в диапазоне [" + left + ", " + (n-1) + "]");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: правая граница должна быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (right == -1) break;
                         System.out.println("Сумма на отрезке [" + left + ".." + right + "]: " + fenwick.rangeSum(left, right));
                         break;
 
                     case 5:
-                        System.out.print("Введите индекс элемента для обновления (0-" + (n-1) + "): ");
-                        int updateIndex = scanner.nextInt();
-                        System.out.print("Введите значение дельты: ");
-                        int delta = scanner.nextInt();
+
+                        int updateIndex = 0;
+                        while (true){
+                            try{
+                                System.out.print("Введите индекс элемента для обновления (0-" + (n-1) + ") или -1 для отмены операции:  ");
+                                updateIndex = scanner.nextInt();
+                                if (updateIndex == -1) break;
+                                if (updateIndex < 0 || updateIndex >= n) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + (n-1) + "]!");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: индекс должен быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (updateIndex == -1) break;
+
+
+
+                        int delta = 0;
+                        while (true) {
+                            try {
+                                System.out.print("Введите насколько хотите изменить (текущее значение " + currentArray[updateIndex] + "). Например +1 или -2: ");
+                                delta = scanner.nextInt();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: Введите целое число!");
+                                scanner.next();
+                            }
+                        }
+
+
                         fenwick.update(updateIndex, delta);
+                        currentArray[updateIndex] += delta;
                         System.out.println("Элемент обновлен");
                         break;
 
@@ -83,10 +190,10 @@ public class Main {
                         break;
 
                     default:
-                        System.out.println("Неверный выбор операции");
+                        System.out.println("Неверный выбор операции!");
                 }
             } catch (IllegalArgumentException e) {
-                System.out.println("Ошибка: " + e.getMessage());
+                System.out.println("Ошибка: " + e.getMessage() + " !");
             }
         }
 

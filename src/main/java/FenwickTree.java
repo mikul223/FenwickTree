@@ -60,6 +60,52 @@ public class FenwickTree{
         return prefixSum(right) - prefixSum(left - 1);
     }
 
+    //Метод вычисления среднего арифметического на отрезке, проверка границ отрезка
+    public double rangeAverage(int left, int right) {
+        if (left < 0 || right >= size || left > right) {
+            throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
+        }
+
+        int sum = rangeSum(left, right);
+        int count = right - left + 1;
+
+        return (double) sum / count;
+    }
+
+    //Метод подсчета количества инверсий
+    public int countInversions(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            return 0;
+        }
+
+        int maxElement = arr[0];
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > maxElement) {
+                maxElement = arr[i];
+            }
+        }
+
+        // Временное дерево Фенвика для инверсий
+        FenwickTree invTree = new FenwickTree();
+        invTree.size = maxElement + 1;
+        invTree.tree = new int[invTree.size + 1];
+
+        int inversions = 0;
+
+        // Проходим по массиву в обратном порядке
+        for (int i = arr.length - 1; i >= 0; i--) {
+            if (arr[i] > 0) {
+                inversions += invTree.prefixSum(arr[i] - 1);
+            }
+            invTree.update(arr[i], 1);
+        }
+
+        return inversions;
+    }
+
+
+
+
     //Формирование строки с массивом
     @Override
     public String toString() {

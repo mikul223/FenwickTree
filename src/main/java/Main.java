@@ -50,6 +50,7 @@ public class Main {
         boolean running = true;
         while (running) {
             System.out.println("\nДоступные операции:");
+            //добавить полосочки для отделения категорий
             System.out.println("1 - Вывести текущий массив");
             System.out.println("2 - Вывести структуру дерева");
             System.out.println("3 - Вычислить префиксную сумму");
@@ -57,6 +58,8 @@ public class Main {
             System.out.println("5 - Обновить элемент");
             System.out.println("6 - Добавить элемент");
             System.out.println("7 - Удалить элемент");
+            System.out.println("8 - Найти среднее арифметическое на отрезке");
+            System.out.println("9 - Найти количество инверсий в массиве");
             System.out.println("0 - Выход");
             System.out.print("Выберите операцию: ");
 
@@ -116,12 +119,14 @@ public class Main {
                                 if (left == -1) break;
                                 if (left < 0 || left >= n) {
                                     System.out.println("Ошибка: левая граница должна быть в диапазоне [0, " + (n-1) + "]");
+                                    System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
                                     continue;
                                 }
                                 break;
                             } catch (InputMismatchException e) {
                                 System.out.println("Ошибка: левая граница должна быть целым числом!");
                                 scanner.next();
+                                System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
                             }
                         }
                         if (left == -1) break;
@@ -229,6 +234,7 @@ public class Main {
 
                         fenwick.build(newArray);
                         currentArray = newArray;
+                        n = currentArray.length;
                         System.out.println("Элемент добавлен. Новый размер массива: " + currentArray.length);
                         break;
 
@@ -267,8 +273,59 @@ public class Main {
 
                         fenwick.build(reducedArray);
                         currentArray = reducedArray;
+                        n = currentArray.length;
                         System.out.println("Элемент удален. Новый размер массива: " + currentArray.length);
                         break;
+
+                    case 8:
+                        System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                        int aLeft = 0;
+                        while (true) {
+                            try {
+                                aLeft = scanner.nextInt();
+                                if (aLeft == -1) break;
+                                if (aLeft < 0 || aLeft >= n) {
+                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [0, " + (n-1) + "]");
+                                    System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: левая граница должна быть целым числом!");
+                                System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                scanner.next();
+                            }
+                        }
+                        if (aLeft == -1) break;
+
+                        int aRight = 0;
+                        while (true){
+                            try{
+                                System.out.print("Введите правую границу (" + aLeft + "-" + (n-1) + ") или -1 для отмены операции: ");
+                                aRight = scanner.nextInt();
+                                if (aRight == -1) break;
+                                if (aRight < aLeft || aRight >= n) {
+                                    System.out.println("Ошибка: правая граница должна быть в диапазоне [" + aLeft + ", " + (n-1) + "]");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("Ошибка: правая граница должна быть целым числом!");
+                                scanner.next();
+                            }
+                        }
+                        if (aRight == -1) break;
+
+                        double average = fenwick.rangeAverage(aLeft, aRight);
+                        System.out.printf("Среднее арифметическое на отрезке [" + aLeft + ".." + aRight + "]: %.2f\n", average);
+                        break;
+
+                    case 9:
+
+                        int inversions = fenwick.countInversions(currentArray);
+                        System.out.println("Количество инверсий в массиве: " + inversions);
+                        break;
+
 
                     case 0:
                         running = false;

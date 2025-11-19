@@ -3,12 +3,14 @@
 package main.java;
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         FenwickTree fenwick = new FenwickTree();
         int[] currentArray = null;
+        Random random = new Random();
 
         System.out.print("Введите количество элементов массива: ");
         int n = 0;
@@ -50,7 +52,7 @@ public class Main {
         boolean running = true;
         while (running) {
             System.out.println("\nДоступные операции:");
-            //добавить полосочки для отделения категорий
+            //System.out.println("");
             System.out.println("1 - Вывести текущий массив");
             System.out.println("2 - Вывести структуру дерева");
             System.out.println("3 - Вычислить префиксную сумму");
@@ -60,6 +62,7 @@ public class Main {
             System.out.println("7 - Удалить элемент");
             System.out.println("8 - Найти среднее арифметическое на отрезке");
             System.out.println("9 - Найти количество инверсий в массиве");
+            System.out.println("10 - Сгенерировать случайный массив");
             System.out.println("0 - Выход");
             System.out.print("Выберите операцию: ");
 
@@ -324,6 +327,40 @@ public class Main {
 
                         int inversions = fenwick.countInversions(currentArray);
                         System.out.println("Количество инверсий в массиве: " + inversions);
+                        break;
+
+                    case 10:
+                        System.out.print("Введите количество элементов в случайном массиве: ");
+                        int rSize = 0;
+                        while (true) {
+                            try {
+                                rSize = scanner.nextInt();
+                                if (rSize <= 0) {
+                                    System.out.print("Количество элементов должно быть натуральным числом! Введите снова: ");
+                                    continue;
+                                }
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.print("Ошибка: введите целое число! Введите снова: ");
+                                scanner.next();
+                            }
+
+                        }
+                        int[] rArray = new int[rSize];
+                        for (int i = 0; i < rSize; i++) {
+                            rArray[i] = random.nextInt(201) - 100; // числа от -100 до 100
+                        }
+
+                        fenwick.build(rArray);
+                        currentArray = rArray.clone();
+                        n = currentArray.length;
+
+                        System.out.print("Создан случайный массив: [");
+                        for (int i = 0; i < currentArray.length; i++) {
+                            System.out.print(currentArray[i]);
+                            if (i < currentArray.length - 1) System.out.print(", ");
+                        }
+                        System.out.println("]");
                         break;
 
 

@@ -1,45 +1,50 @@
 package main.java;
 
-public class FenwickTree{
-    private int[] tree;
+public class FenwickTree<T extends Number>{
+    private long[] tree;
     private int size;
 
 
     //Построение дерева из массива с проверкой на 0 и исключений. Элементы добавляются с помощью метода update
-    public void build(int[] arr) {
+    public void build(T[] arr) {
         if (arr == null) {
-            throw new IllegalArgumentException("Массив пуст :(");
+            throw new IllegalArgumentException("Массив пуст!");
         }
 
         this.size = arr.length;
-        this.tree = new int[size + 1];
+        this.tree = new long[size + 1]; // 1-индексация
 
+        long[] prefix = new long[size + 1];
         for (int i = 0; i < size; i++) {
-            update(i, arr[i]);
+            prefix[i + 1] = prefix[i] + arr[i].longValue();
+        }
+        for (int i = 1; i <= size; i++) {
+            int lsb = i & -i;
+            tree[i] = prefix[i] - prefix[i - lsb];
         }
     }
 
     //Метод обновления элемента.  Добавление дельты к элементу с заданным индексом, проверка индекса
-    public void update(int index, int delta) {
+    public void update(int index, T delta) {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [0, " + (size-1) + "]");
         }
-
+        long deltaValue = delta.longValue();
         int i = index + 1;   // Переход к 1-индексации
         while (i <= size) {
-            tree[i] += delta;
+            tree[i] += deltaValue;
             i += i & -i;    // Двигаемся вверх по дереву. "i & -i" - выделяет младший значащий бит числа
         }
     }
 
 
     //Метод вычисления префиксной суммы от 0 до индекса, проверка индекса
-    public int prefixSum(int index) {
+    public long prefixSum(int index) {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [0, " + (size-1) + "]");
         }
 
-        int sum = 0;
+        long sum = 0;
         int i = index + 1;
         while (i > 0) {
             sum += tree[i];
@@ -49,7 +54,7 @@ public class FenwickTree{
     }
 
     //Метод вычисления суммы на отрезке, проверка границ отрезка
-    public int rangeSum(int left, int right) {
+    public long rangeSum(int left, int right) {
         if (left < 0 || right >= size || left > right) {
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
@@ -66,38 +71,51 @@ public class FenwickTree{
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
 
-        int sum = rangeSum(left, right);
+        long sum = rangeSum(left, right);
         int count = right - left + 1;
-
         return (double) sum / count;
     }
 
     //Метод подсчета количества инверсий
-    public int countInversions(int[] arr) {
+    public int countInversions(T[] arr) {
         if (arr == null || arr.length == 0) {
             return 0;
         }
 
-        int maxElement = arr[0];
-        for (int i = 1; i < arr.length; i++) {
-            if (arr[i] > maxElement) {
-                maxElement = arr[i];
+        long maxElement = arr[0].longValue();
+        for (T num : arr) {
+            long value = num.longValue();
+            if (value > maxElement) {
+                maxElement = value;
             }
         }
 
+        int treeSize = (int)maxElement + 2;
+
         // Временное дерево Фенвика для инверсий
-        FenwickTree invTree = new FenwickTree();
-        invTree.size = maxElement + 1;
-        invTree.tree = new int[invTree.size + 1];
+        FenwickTree<Integer> invTree = new FenwickTree<>();
+        Integer[] zeroArray = new Integer[treeSize];
+        for (int i = 0; i < treeSize; i++) {
+            zeroArray[i] = 0;
+        }
+        invTree.build(zeroArray);
 
         int inversions = 0;
 
         // Проходим по массиву в обратном порядке
         for (int i = arr.length - 1; i >= 0; i--) {
-            if (arr[i] > 0) {
-                inversions += invTree.prefixSum(arr[i] - 1);
+            int value = arr[i].intValue();
+            if (value < 0) {
+                continue;
             }
-            invTree.update(arr[i], 1);
+            int treeIndex = value + 1;
+            if (treeIndex >= treeSize) {
+                throw new IllegalArgumentException("Элемент " + value + " превышает размер дерева инверсий");
+            }
+            if (value > 0) {
+                inversions += (int)invTree.prefixSum(value - 1);
+            }
+            invTree.update(treeIndex, 1);
         }
 
         return inversions;

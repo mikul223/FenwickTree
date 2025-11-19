@@ -8,8 +8,8 @@ import java.util.Random;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        FenwickTree fenwick = new FenwickTree();
-        int[] currentArray = null;
+        FenwickTree<Integer> fenwick = new FenwickTree<>();
+        Integer[] currentArray = null;
         Random random = new Random();
 
         System.out.print("Введите количество элементов массива: ");
@@ -28,7 +28,7 @@ public class Main {
             }
         }
 
-        int[] array = new int[n];
+        Integer[] array = new Integer[n];
 
         System.out.println("Введите элементы массива");
         for (int i = 0; i < n; i++) {
@@ -224,7 +224,7 @@ public class Main {
                         if (insertIndex == -1) break;
 
                         //Новый массив, на элемент больше
-                        int[] newArray = new int[currentArray.length + 1];
+                        Integer[] newArray = new Integer[currentArray.length + 1];
 
                         // Копируем элементы до индекса вставки, вставляем новый элемент, копируем со сдвигом оставшееся
                         for (int i = 0; i < insertIndex; i++) {
@@ -266,7 +266,7 @@ public class Main {
                         if (removeIndex == -1) break;
 
                         // Новый массив на элемент меньше
-                        int[] reducedArray = new int[currentArray.length - 1];
+                        Integer[] reducedArray = new Integer[currentArray.length - 1];
 
                         for (int i = 0, j = 0; i < currentArray.length; i++) {
                             if (i != removeIndex) {
@@ -346,7 +346,7 @@ public class Main {
                             }
 
                         }
-                        int[] rArray = new int[rSize];
+                        Integer[] rArray = new Integer[rSize];
                         for (int i = 0; i < rSize; i++) {
                             rArray[i] = random.nextInt(201) - 100; // числа от -100 до 100
                         }

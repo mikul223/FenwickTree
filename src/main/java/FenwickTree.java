@@ -9,6 +9,12 @@ public class FenwickTree<T extends Number>{
     private static final int MIN_INDEX = 0;
     private static final int INVERSION_TREE = 2;
 
+    //Коллекция для хранения истории операций
+    private DynamicArray<String> operationHistory;
+
+    public FenwickTree() {
+        this.operationHistory = new DynamicArray<>();
+    }
 
     //Построение дерева из массива с проверкой на 0 и исключений. Элементы добавляются с помощью метода update
     public void build(T[] arr) {
@@ -27,6 +33,7 @@ public class FenwickTree<T extends Number>{
             int lsb = i & -i;
             tree[i] = prefix[i] - prefix[i - lsb];
         }
+        operationHistory.add("Построено дерево из массива размером " + size);
     }
 
     //Метод обновления элемента.  Добавление дельты к элементу с заданным индексом, проверка индекса
@@ -40,6 +47,13 @@ public class FenwickTree<T extends Number>{
             tree[i] += deltaValue;
             i += i & -i;    // Двигаемся вверх по дереву. "i & -i" - выделяет младший значащий бит числа
         }
+        if (deltaValue < 0){
+            operationHistory.add("Элемент с индексом " + index + " уменьшен на " + -1*deltaValue);
+        }
+        if (deltaValue > 0){
+            operationHistory.add("Элемент с индексом " + index + " увеличен на " + delta);
+        }
+
     }
 
 
@@ -55,7 +69,9 @@ public class FenwickTree<T extends Number>{
             sum += tree[i];
             i -= i & -i; // Двигаемся вниз по дереву
         }
+        operationHistory.add("Вычислена префиксная сумма [" + MIN_INDEX + ".." + index + "] = " + sum);
         return sum;
+
     }
 
     //Метод вычисления суммы на отрезке, проверка границ отрезка
@@ -63,10 +79,13 @@ public class FenwickTree<T extends Number>{
         if (left < MIN_INDEX || right >= size || left > right) {
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
-
+        long sum;
         if (left == MIN_INDEX) {
-            return prefixSum(right);
+            sum = prefixSum(right);
+        } else {
+            sum = prefixSum(right) - prefixSum(left - 1);
         }
+        operationHistory.add("Вычислена сумма на отрезке [" + left + ".." + right + "] = " + sum);
         return prefixSum(right) - prefixSum(left - 1);
     }
 
@@ -78,17 +97,20 @@ public class FenwickTree<T extends Number>{
 
         long sum = rangeSum(left, right);
         int count = right - left + 1;
-        return (double) sum / count;
+        double average = (double) sum / count;
+
+        operationHistory.add("Вычислено среднее арифметическое на отрезке [" + left + ".." + right + "] = " + average );
+        return average;
     }
 
     //Метод подсчета количества инверсий
-    public int countInversions(T[] arr) {
+    public <U extends Number> int countInversions(U[] arr) {
         if (arr == null || arr.length == EMPTY_ARRAY) {
             return 0;
         }
 
         long maxElement = arr[0].longValue();
-        for (T num : arr) {
+        for (U num : arr) {
             long value = num.longValue();
             if (value > maxElement) {
                 maxElement = value;
@@ -122,12 +144,24 @@ public class FenwickTree<T extends Number>{
             }
             invTree.update(treeIndex, 1);
         }
-
+        operationHistory.add("Найдено инверсий: " + inversions );
         return inversions;
     }
 
+    //Получение истории операций
+    public DynamicArray<String> getOperationHistory() {
+        return operationHistory;
+    }
 
+    public void buildWithHistory(T[] arr, String description) {
+        build(arr);
+        operationHistory.add(description);
+    }
 
+    public void updateWithHistory(int index, T delta, String description) {
+        update(index, delta);
+        operationHistory.add(description);
+    }
 
     //Формирование строки с массивом
     @Override

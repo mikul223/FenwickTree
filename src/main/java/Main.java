@@ -5,6 +5,8 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.util.Random;
 
+
+
 public class Main {
 
     private static final int EXIT_CODE = -1;
@@ -70,6 +72,7 @@ public class Main {
             System.out.println("8 - Найти среднее арифметическое на отрезке");
             System.out.println("9 - Найти количество инверсий в массиве");
             System.out.println("10 - Сгенерировать случайный массив");
+            System.out.println("11 - Показать историю операций");
             System.out.println("0 - Выход");
             System.out.print("Выберите операцию: ");
 
@@ -243,9 +246,11 @@ public class Main {
                         }
 
                         fenwick.build(newArray);
+                        fenwick.getOperationHistory().add("Добавлен элемент " + newValue + " на позицию " + insertIndex + ". Новый размер: " + newArray.length);
                         currentArray = newArray;
                         n = currentArray.length;
                         System.out.println("Элемент добавлен. Новый размер массива: " + currentArray.length);
+
                         break;
 
                     case 7:
@@ -282,6 +287,7 @@ public class Main {
                         }
 
                         fenwick.build(reducedArray);
+                        fenwick.getOperationHistory().add("Удален элемент с позиции " + removeIndex + ". Новый размер: " + reducedArray.length);
                         currentArray = reducedArray;
                         n = currentArray.length;
                         System.out.println("Элемент удален. Новый размер массива: " + currentArray.length);
@@ -359,6 +365,7 @@ public class Main {
                         }
 
                         fenwick.build(rArray);
+                        fenwick.getOperationHistory().add("Сгенерирован случайный массив размера: " + rSize);
                         currentArray = rArray.clone();
                         n = currentArray.length;
 
@@ -368,6 +375,14 @@ public class Main {
                             if (i < currentArray.length - 1) System.out.print(", ");
                         }
                         System.out.println("]");
+                        break;
+
+                    case 11:
+                        DynamicArray<String> history = fenwick.getOperationHistory();
+                        System.out.println("История операций:");
+                        for (int i = 0; i < history.size(); i++) {
+                            System.out.println((i + 1) + ". " + history.get(i));
+                        }
                         break;
 
 

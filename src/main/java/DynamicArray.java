@@ -11,14 +11,6 @@ public class DynamicArray<T> {
         size = 0;
     }
 
-    public DynamicArray(int initialCapacity) {
-        if (initialCapacity <= 0) {
-            throw new IllegalArgumentException("Емкость должна быть положительной");
-        }
-        data = new Object[initialCapacity];
-        size = 0;
-    }
-
     // Добавление элемента в конец
     public void add(T element) {
         if (size == data.length) {
@@ -36,23 +28,12 @@ public class DynamicArray<T> {
         return (T) data[index];
     }
 
-    // Установка элемента по индексу
-    public void set(int index, T element) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Индекс: " + index + ", Размер: " + size);
-        }
-        data[index] = element;
-    }
 
-    // Размер коллекции
     public int size() {
         return size;
     }
 
-    // Проверка на пустоту
-    public boolean isEmpty() {
-        return size == 0;
-    }
+
 
     // Увеличение емкости
     private void resize() {

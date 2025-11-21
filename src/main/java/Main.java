@@ -5,8 +5,6 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.util.Random;
 
-
-
 public class Main {
 
     private static final int EXIT_CODE = -1;
@@ -112,7 +110,9 @@ public class Main {
                                 System.out.print("Введите индекс (" + MIN_INDEX + "-" + (n-1) + ") или -1 для отмены операции: ");
                                 int prefixIndex = scanner.nextInt();
                                 if (prefixIndex == EXIT_CODE) break;
-                                System.out.println("Префиксная сумма [" + MIN_INDEX + ".." + prefixIndex + "]: " + fenwick.prefixSum(prefixIndex));
+                                long result = fenwick.prefixSum(prefixIndex);
+                                fenwick.getOperationHistory().add("Вычислена префиксная сумма [" + MIN_INDEX + ".." + prefixIndex + "] = " + result);
+                                System.out.println("Префиксная сумма [" + MIN_INDEX + ".." + prefixIndex + "]: " + result);
                                 break;
                             } catch (InputMismatchException e) {
                                 System.out.println("Ошибка: индекс должен быть целым числом!");
@@ -162,7 +162,11 @@ public class Main {
                             }
                         }
                         if (right == EXIT_CODE) break;
-                        System.out.println("Сумма на отрезке [" + left + ".." + right + "]: " + fenwick.rangeSum(left, right));
+
+                        long result = fenwick.rangeSum(left, right);
+                        fenwick.getOperationHistory().add("Вычислена сумма на отрезке [" + left + ".." + right + "] = " + result);
+
+                        System.out.println("Сумма на отрезке [" + left + ".." + right + "]: " + result);
                         break;
 
                     case 5:

@@ -69,7 +69,7 @@ public class FenwickTree<T extends Number>{
             sum += tree[i];
             i -= i & -i; // Двигаемся вниз по дереву
         }
-        operationHistory.add("Вычислена префиксная сумма [" + MIN_INDEX + ".." + index + "] = " + sum);
+
         return sum;
 
     }
@@ -79,14 +79,12 @@ public class FenwickTree<T extends Number>{
         if (left < MIN_INDEX || right >= size || left > right) {
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
-        long sum;
         if (left == MIN_INDEX) {
-            sum = prefixSum(right);
+            return prefixSum(right);
         } else {
-            sum = prefixSum(right) - prefixSum(left - 1);
+            return prefixSum(right) - prefixSum(left - 1);
         }
-        operationHistory.add("Вычислена сумма на отрезке [" + left + ".." + right + "] = " + sum);
-        return prefixSum(right) - prefixSum(left - 1);
+
     }
 
     //Метод вычисления среднего арифметического на отрезке, проверка границ отрезка
@@ -106,18 +104,29 @@ public class FenwickTree<T extends Number>{
     //Метод подсчета количества инверсий
     public <U extends Number> int countInversions(U[] arr) {
         if (arr == null || arr.length == EMPTY_ARRAY) {
+            operationHistory.add("Найдено инверсий: 0");
             return 0;
         }
-
+        long minElement = arr[0].longValue();
         long maxElement = arr[0].longValue();
         for (U num : arr) {
             long value = num.longValue();
             if (value > maxElement) {
                 maxElement = value;
             }
+            if (value < minElement) {
+                minElement = value;
+            }
         }
 
-        int treeSize = (int)maxElement + INVERSION_TREE;
+        //Сдвиг для устранения отрицательных значений
+        long shift;
+        if (minElement < 0) {
+            shift = -minElement + 1;
+        } else {
+            shift = 0;
+        }
+        int treeSize = (int)(maxElement + shift) + INVERSION_TREE;
 
         // Временное дерево Фенвика для инверсий
         FenwickTree<Integer> invTree = new FenwickTree<>();
@@ -131,13 +140,13 @@ public class FenwickTree<T extends Number>{
 
         // Проходим по массиву в обратном порядке
         for (int i = arr.length - 1; i >= 0; i--) {
-            int value = arr[i].intValue();
+            int value = (int)(arr[i].longValue() + shift); // Применяем сдвиг
             if (value < MIN_INDEX) {
                 continue;
             }
             int treeIndex = value + INDEX_OFFSET;
             if (treeIndex >= treeSize) {
-                throw new IllegalArgumentException("Элемент " + value + " превышает размер дерева инверсий");
+                treeIndex = treeSize - 1; // Ограничиваем максимальным индексом
             }
             if (value > MIN_INDEX) {
                 inversions += (int)invTree.prefixSum(value - 1);
@@ -153,15 +162,6 @@ public class FenwickTree<T extends Number>{
         return operationHistory;
     }
 
-    public void buildWithHistory(T[] arr, String description) {
-        build(arr);
-        operationHistory.add(description);
-    }
-
-    public void updateWithHistory(int index, T delta, String description) {
-        update(index, delta);
-        operationHistory.add(description);
-    }
 
     //Формирование строки с массивом
     @Override

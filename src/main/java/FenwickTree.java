@@ -4,6 +4,11 @@ public class FenwickTree<T extends Number>{
     private long[] tree;
     private int size;
 
+    private static final int INDEX_OFFSET = 1;
+    private static final int EMPTY_ARRAY = 0;
+    private static final int MIN_INDEX = 0;
+    private static final int INVERSION_TREE = 2;
+
 
     //Построение дерева из массива с проверкой на 0 и исключений. Элементы добавляются с помощью метода update
     public void build(T[] arr) {
@@ -12,13 +17,13 @@ public class FenwickTree<T extends Number>{
         }
 
         this.size = arr.length;
-        this.tree = new long[size + 1]; // 1-индексация
+        this.tree = new long[size + INDEX_OFFSET]; // 1-индексация
 
-        long[] prefix = new long[size + 1];
+        long[] prefix = new long[size + INDEX_OFFSET];
         for (int i = 0; i < size; i++) {
-            prefix[i + 1] = prefix[i] + arr[i].longValue();
+            prefix[i + INDEX_OFFSET] = prefix[i + INDEX_OFFSET - 1] + arr[i].longValue();
         }
-        for (int i = 1; i <= size; i++) {
+        for (int i = INDEX_OFFSET; i <= size; i++) {
             int lsb = i & -i;
             tree[i] = prefix[i] - prefix[i - lsb];
         }
@@ -26,11 +31,11 @@ public class FenwickTree<T extends Number>{
 
     //Метод обновления элемента.  Добавление дельты к элементу с заданным индексом, проверка индекса
     public void update(int index, T delta) {
-        if (index < 0 || index >= size) {
-            throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [0, " + (size-1) + "]");
+        if (index < MIN_INDEX || index >= size) {
+            throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [" + MIN_INDEX + ", " + (size-1) + "]");
         }
         long deltaValue = delta.longValue();
-        int i = index + 1;   // Переход к 1-индексации
+        int i = index + INDEX_OFFSET;   // Переход к 1-индексации
         while (i <= size) {
             tree[i] += deltaValue;
             i += i & -i;    // Двигаемся вверх по дереву. "i & -i" - выделяет младший значащий бит числа
@@ -40,12 +45,12 @@ public class FenwickTree<T extends Number>{
 
     //Метод вычисления префиксной суммы от 0 до индекса, проверка индекса
     public long prefixSum(int index) {
-        if (index < 0 || index >= size) {
-            throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [0, " + (size-1) + "]");
+        if (index < MIN_INDEX || index >= size) {
+            throw new IllegalArgumentException("Индекс " + index + " выходит за пределы [" + MIN_INDEX + ", " + (size-1) + "]");
         }
 
         long sum = 0;
-        int i = index + 1;
+        int i = index + INDEX_OFFSET;
         while (i > 0) {
             sum += tree[i];
             i -= i & -i; // Двигаемся вниз по дереву
@@ -55,11 +60,11 @@ public class FenwickTree<T extends Number>{
 
     //Метод вычисления суммы на отрезке, проверка границ отрезка
     public long rangeSum(int left, int right) {
-        if (left < 0 || right >= size || left > right) {
+        if (left < MIN_INDEX || right >= size || left > right) {
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
 
-        if (left == 0) {
+        if (left == MIN_INDEX) {
             return prefixSum(right);
         }
         return prefixSum(right) - prefixSum(left - 1);
@@ -67,7 +72,7 @@ public class FenwickTree<T extends Number>{
 
     //Метод вычисления среднего арифметического на отрезке, проверка границ отрезка
     public double rangeAverage(int left, int right) {
-        if (left < 0 || right >= size || left > right) {
+        if (left < MIN_INDEX || right >= size || left > right) {
             throw new IllegalArgumentException("Неверный диапазон: [" + left + ", " + right + "]");
         }
 
@@ -78,7 +83,7 @@ public class FenwickTree<T extends Number>{
 
     //Метод подсчета количества инверсий
     public int countInversions(T[] arr) {
-        if (arr == null || arr.length == 0) {
+        if (arr == null || arr.length == EMPTY_ARRAY) {
             return 0;
         }
 
@@ -90,7 +95,7 @@ public class FenwickTree<T extends Number>{
             }
         }
 
-        int treeSize = (int)maxElement + 2;
+        int treeSize = (int)maxElement + INVERSION_TREE;
 
         // Временное дерево Фенвика для инверсий
         FenwickTree<Integer> invTree = new FenwickTree<>();
@@ -105,14 +110,14 @@ public class FenwickTree<T extends Number>{
         // Проходим по массиву в обратном порядке
         for (int i = arr.length - 1; i >= 0; i--) {
             int value = arr[i].intValue();
-            if (value < 0) {
+            if (value < MIN_INDEX) {
                 continue;
             }
-            int treeIndex = value + 1;
+            int treeIndex = value + INDEX_OFFSET;
             if (treeIndex >= treeSize) {
                 throw new IllegalArgumentException("Элемент " + value + " превышает размер дерева инверсий");
             }
-            if (value > 0) {
+            if (value > MIN_INDEX) {
                 inversions += (int)invTree.prefixSum(value - 1);
             }
             invTree.update(treeIndex, 1);
@@ -128,8 +133,8 @@ public class FenwickTree<T extends Number>{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("FenwickTree[");
-        for (int i = 1; i <= size; i++) {
+        sb.append("[");
+        for (int i = INDEX_OFFSET; i <= size; i++) {
             sb.append(tree[i]);
             if (i < size) sb.append(", ");
         }

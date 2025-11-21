@@ -6,6 +6,13 @@ import java.util.InputMismatchException;
 import java.util.Random;
 
 public class Main {
+
+    private static final int EXIT_CODE = -1;
+    private static final int MIN_ARRAY= 1;
+    private static final int MIN_INDEX = 0;
+    private static final int RANDOM_MIN = -100;
+    private static final int RANDOM_RANGE = 201; //100+100+1
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         FenwickTree<Integer> fenwick = new FenwickTree<>();
@@ -17,7 +24,7 @@ public class Main {
         while (true) {
             try {
                 n = scanner.nextInt();
-                if (n <= 0) {
+                if (n < MIN_ARRAY) {
                     System.out.print("Количество элементов должно быть натуральным числом! Введите снова: ");
                     continue;
                 }
@@ -31,7 +38,7 @@ public class Main {
         Integer[] array = new Integer[n];
 
         System.out.println("Введите элементы массива");
-        for (int i = 0; i < n; i++) {
+        for (int i = MIN_INDEX; i < n; i++) {
             while (true) {
                 try {
                     System.out.print("Элемент " + i + ": ");
@@ -67,7 +74,7 @@ public class Main {
             System.out.print("Выберите операцию: ");
 
 
-            int choice = 0;
+            int choice = MIN_INDEX;
             try {
                 choice = scanner.nextInt();
             } catch (InputMismatchException e) {
@@ -83,7 +90,7 @@ public class Main {
                     case 1:
                         if (currentArray != null) {
                             System.out.print("Текущий массив: [");
-                            for (int i = 0; i < currentArray.length; i++) {
+                            for (int i = MIN_INDEX; i < currentArray.length; i++) {
                                 System.out.print(currentArray[i]);
                                 if (i < currentArray.length - 1) System.out.print(", ");
                             }
@@ -99,10 +106,10 @@ public class Main {
                     case 3:
                         while (true) {
                             try {
-                                System.out.print("Введите индекс (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите индекс (" + MIN_INDEX + "-" + (n-1) + ") или -1 для отмены операции: ");
                                 int prefixIndex = scanner.nextInt();
-                                if (prefixIndex == -1) break;
-                                System.out.println("Префиксная сумма [0.." + prefixIndex + "]: " + fenwick.prefixSum(prefixIndex));
+                                if (prefixIndex == EXIT_CODE) break;
+                                System.out.println("Префиксная сумма [" + MIN_INDEX + ".." + prefixIndex + "]: " + fenwick.prefixSum(prefixIndex));
                                 break;
                             } catch (InputMismatchException e) {
                                 System.out.println("Ошибка: индекс должен быть целым числом!");
@@ -114,33 +121,33 @@ public class Main {
                         break;
 
                     case 4:
-                        System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
-                        int left = 0;
+                        System.out.print("Введите левую границу (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
+                        int left = MIN_INDEX;
                         while (true) {
                             try {
                                 left = scanner.nextInt();
-                                if (left == -1) break;
-                                if (left < 0 || left >= n) {
-                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [0, " + (n-1) + "]");
-                                    System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                if (left == EXIT_CODE) break;
+                                if (left < MIN_INDEX || left >= n) {
+                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [" + MIN_INDEX + ", " + (n-1) + "]");
+                                    System.out.print("Введите левую границу (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                     continue;
                                 }
                                 break;
                             } catch (InputMismatchException e) {
                                 System.out.println("Ошибка: левая граница должна быть целым числом!");
                                 scanner.next();
-                                System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите левую границу (" + MIN_INDEX +"-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                             }
                         }
-                        if (left == -1) break;
+                        if (left == EXIT_CODE) break;
 
 
-                        int right = 0;
+                        int right = MIN_INDEX;
                         while (true){
                             try{
-                                System.out.print("Введите правую границу (" + left + "-" + (n-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите правую границу (" + left + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                 right = scanner.nextInt();
-                                if (right == -1) break;
+                                if (right == EXIT_CODE) break;
                                 if (right < left || right >= n) {
                                     System.out.println("Ошибка: правая граница должна быть в диапазоне [" + left + ", " + (n-1) + "]");
                                     continue;
@@ -151,20 +158,20 @@ public class Main {
                                 scanner.next();
                             }
                         }
-                        if (right == -1) break;
+                        if (right == EXIT_CODE) break;
                         System.out.println("Сумма на отрезке [" + left + ".." + right + "]: " + fenwick.rangeSum(left, right));
                         break;
 
                     case 5:
 
-                        int updateIndex = 0;
+                        int updateIndex = MIN_INDEX;
                         while (true){
                             try{
-                                System.out.print("Введите индекс элемента для обновления (0-" + (n-1) + ") или -1 для отмены операции:  ");
+                                System.out.print("Введите индекс элемента для обновления (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции:  ");
                                 updateIndex = scanner.nextInt();
-                                if (updateIndex == -1) break;
-                                if (updateIndex < 0 || updateIndex >= n) {
-                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + (n-1) + "]!");
+                                if (updateIndex == EXIT_CODE) break;
+                                if (updateIndex < MIN_INDEX || updateIndex >= n) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [" + MIN_INDEX + ", " + (n-1) + "]!");
                                     continue;
                                 }
                                 break;
@@ -173,9 +180,9 @@ public class Main {
                                 scanner.next();
                             }
                         }
-                        if (updateIndex == -1) break;
+                        if (updateIndex == EXIT_CODE) break;
 
-                        int delta = 0;
+                        int delta = MIN_INDEX;
                         while (true) {
                             try {
                                 System.out.print("Введите насколько хотите изменить (текущее значение " + currentArray[updateIndex] + "). Например +1 или -2: ");
@@ -193,7 +200,7 @@ public class Main {
                         break;
 
                     case 6:
-                        int newValue = 0;
+                        int newValue = MIN_INDEX;
                         while (true) {
                             try {
                                 System.out.print("Введите значение нового элемента: ");
@@ -205,14 +212,14 @@ public class Main {
                             }
                         }
 
-                        int insertIndex = 0;
+                        int insertIndex = MIN_INDEX;
                         while (true) {
                             try {
-                                System.out.print("Введите индекс для вставки (0-" + currentArray.length + ") или -1 для отмены операции: ");
+                                System.out.print("Введите индекс для вставки (" + MIN_INDEX + "-" + currentArray.length + ") или " + EXIT_CODE + " для отмены операции: ");
                                 insertIndex = scanner.nextInt();
-                                if (insertIndex == -1) break;
-                                if (insertIndex < 0 || insertIndex > currentArray.length) {
-                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + currentArray.length + "]!");
+                                if (insertIndex == EXIT_CODE) break;
+                                if (insertIndex < MIN_INDEX || insertIndex > currentArray.length) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [" + MIN_INDEX + ", " + currentArray.length + "]!");
                                     continue;
                                 }
                                 break;
@@ -221,13 +228,13 @@ public class Main {
                                 scanner.next();
                             }
                         }
-                        if (insertIndex == -1) break;
+                        if (insertIndex == EXIT_CODE) break;
 
                         //Новый массив, на элемент больше
                         Integer[] newArray = new Integer[currentArray.length + 1];
 
                         // Копируем элементы до индекса вставки, вставляем новый элемент, копируем со сдвигом оставшееся
-                        for (int i = 0; i < insertIndex; i++) {
+                        for (int i = MIN_INDEX; i < insertIndex; i++) {
                             newArray[i] = currentArray[i];
                         }
                         newArray[insertIndex] = newValue;
@@ -242,19 +249,19 @@ public class Main {
                         break;
 
                     case 7:
-                        if (currentArray.length == 0) {
+                        if (currentArray.length == MIN_INDEX) {
                             System.out.println("Массив пуст!");
                             break;
                         }
 
-                        int removeIndex = 0;
+                        int removeIndex = MIN_INDEX;
                         while (true) {
                             try {
-                                System.out.print("Введите индекс элемента для удаления (0-" + (currentArray.length-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите индекс элемента для удаления (" + MIN_INDEX + "-" + (currentArray.length-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                 removeIndex = scanner.nextInt();
-                                if (removeIndex == -1) break;
-                                if (removeIndex < 0 || removeIndex >= currentArray.length) {
-                                    System.out.println("Ошибка: индекс должен быть в диапазоне [0, " + (currentArray.length-1) + "]!");
+                                if (removeIndex == EXIT_CODE) break;
+                                if (removeIndex < MIN_INDEX || removeIndex >= currentArray.length) {
+                                    System.out.println("Ошибка: индекс должен быть в диапазоне [" + MIN_INDEX + ", " + (currentArray.length-1) + "]!");
                                     continue;
                                 }
                                 break;
@@ -263,12 +270,12 @@ public class Main {
                                 scanner.next();
                             }
                         }
-                        if (removeIndex == -1) break;
+                        if (removeIndex == EXIT_CODE) break;
 
                         // Новый массив на элемент меньше
                         Integer[] reducedArray = new Integer[currentArray.length - 1];
 
-                        for (int i = 0, j = 0; i < currentArray.length; i++) {
+                        for (int i = MIN_INDEX, j = MIN_INDEX; i < currentArray.length; i++) {
                             if (i != removeIndex) {
                                 reducedArray[j++] = currentArray[i];
                             }
@@ -281,32 +288,32 @@ public class Main {
                         break;
 
                     case 8:
-                        System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
-                        int aLeft = 0;
+                        System.out.print("Введите левую границу (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
+                        int aLeft = MIN_INDEX;
                         while (true) {
                             try {
                                 aLeft = scanner.nextInt();
-                                if (aLeft == -1) break;
-                                if (aLeft < 0 || aLeft >= n) {
-                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [0, " + (n-1) + "]");
-                                    System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                if (aLeft == EXIT_CODE) break;
+                                if (aLeft < MIN_INDEX || aLeft >= n) {
+                                    System.out.println("Ошибка: левая граница должна быть в диапазоне [" + MIN_INDEX + ", " + (n-1) + "]");
+                                    System.out.print("Введите левую границу (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                     continue;
                                 }
                                 break;
                             } catch (InputMismatchException e) {
                                 System.out.println("Ошибка: левая граница должна быть целым числом!");
-                                System.out.print("Введите левую границу (0-" + (n-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите левую границу (" + MIN_INDEX + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                 scanner.next();
                             }
                         }
-                        if (aLeft == -1) break;
+                        if (aLeft == EXIT_CODE) break;
 
-                        int aRight = 0;
+                        int aRight = MIN_INDEX;
                         while (true){
                             try{
-                                System.out.print("Введите правую границу (" + aLeft + "-" + (n-1) + ") или -1 для отмены операции: ");
+                                System.out.print("Введите правую границу (" + aLeft + "-" + (n-1) + ") или " + EXIT_CODE + " для отмены операции: ");
                                 aRight = scanner.nextInt();
-                                if (aRight == -1) break;
+                                if (aRight == EXIT_CODE) break;
                                 if (aRight < aLeft || aRight >= n) {
                                     System.out.println("Ошибка: правая граница должна быть в диапазоне [" + aLeft + ", " + (n-1) + "]");
                                     continue;
@@ -317,7 +324,7 @@ public class Main {
                                 scanner.next();
                             }
                         }
-                        if (aRight == -1) break;
+                        if (aRight == EXIT_CODE) break;
 
                         double average = fenwick.rangeAverage(aLeft, aRight);
                         System.out.printf("Среднее арифметическое на отрезке [" + aLeft + ".." + aRight + "]: %.2f\n", average);
@@ -331,11 +338,11 @@ public class Main {
 
                     case 10:
                         System.out.print("Введите количество элементов в случайном массиве: ");
-                        int rSize = 0;
+                        int rSize = MIN_INDEX;
                         while (true) {
                             try {
                                 rSize = scanner.nextInt();
-                                if (rSize <= 0) {
+                                if (rSize <= MIN_ARRAY) {
                                     System.out.print("Количество элементов должно быть натуральным числом! Введите снова: ");
                                     continue;
                                 }
@@ -347,8 +354,8 @@ public class Main {
 
                         }
                         Integer[] rArray = new Integer[rSize];
-                        for (int i = 0; i < rSize; i++) {
-                            rArray[i] = random.nextInt(201) - 100; // числа от -100 до 100
+                        for (int i = MIN_INDEX; i < rSize; i++) {
+                            rArray[i] = random.nextInt(RANDOM_RANGE) + RANDOM_MIN;
                         }
 
                         fenwick.build(rArray);
@@ -356,7 +363,7 @@ public class Main {
                         n = currentArray.length;
 
                         System.out.print("Создан случайный массив: [");
-                        for (int i = 0; i < currentArray.length; i++) {
+                        for (int i = MIN_INDEX; i < currentArray.length; i++) {
                             System.out.print(currentArray[i]);
                             if (i < currentArray.length - 1) System.out.print(", ");
                         }
